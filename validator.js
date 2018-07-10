@@ -1,6 +1,8 @@
 //Author: Rogelio Prestol
+//https://github.com/progelio/validator.js
 
 var validator = function () {
+    "use strict"
     function $(q) { return document.querySelector(q) }
     function $$(r, q) { return _toArray(r.querySelectorAll(q)) }
 
@@ -40,16 +42,18 @@ var validator = function () {
         integer: { regex: /^-?\d+$/, error: "{0} is not an integer." },
         float: { regex: /^-?\d+[.]\d+$/, error: "{0} is not a float." },
         date: { regex: /^(\d{1,2})[/](\d{1,2})[/](\d{2}(\d{2})?)(\s\d{1,2}[:]\d{2}([:]\d{2})?\s(am|pm))?$/i, error: "{0} is not a date." },
-        ssn: { regex: /^\d{3}[-]?\d{2}[-]?\d{4}$/, error: "{0} is not a social security number." },
-        creditCard: { regex: /^\d{15,16}$/, error: "{0} is not a credit card number." },
+        ssn: { regex: /^\d{3}-\d{2}-\d{4}$/, error: "{0} is not a social security number." },
+        creditcard: { regex: /^\d{15,16}$/, error: "{0} is not a credit card number." },
         maxlength: { error: "{0} must not exceed {1} characters." },
         minlength: { error: "{0} must not be less than {1} characters." },
         max: { error: "{0} must not be greater than {1}." },
         min: { error: "{0} must not be less than {1}." },
         length: { error: "{0} must be {1} characters long." },
-        url: { regex: /.*/, error: "{0} is not a valid URL." },
-        domain: { regex: /.*/, error: "{0} is not a valid domain." },
+        url: { regex: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?(\?.*)?$/, error: "{0} is not a valid URL." },
+        domain: { regex: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/, error: "{0} is not a valid domain." },
         pattern: { error: "{0} is not valid." },
+        zip: { regex: /^\d{5}(-\d{4})?$/, error: "{0} is not a valid postal code." },
+        phone: { regex: /^((\(\d{3}\)?)|(\d{3}-))?\d{3}-\d{4}$/, error: "{0} is not a valid phone." },
         compare: { error: "{0} does not match." },
         not: { error: "{0} is not allowed." },
         any: { error: "{1} is not allowed." },
@@ -57,6 +61,10 @@ var validator = function () {
     }
 
     function _value(rule, value, type, args) {
+        //should not be validated if the value is empty.
+        if (rule != "required" && (value == "" || value == undefined || value == null)) {
+            return true
+        }
         if (rule == "custom") {
             return args(value)
         }
@@ -253,7 +261,10 @@ var validator = function () {
     }
 
     return {
-        config: { errorCss: "validator-error", errorInputCss: "input-error" },
+        config: {
+            errorCss: "validator-error",
+            errorInputCss: "input-error"
+        },
         custom: {},
         validate: _validate,
         single: _single
