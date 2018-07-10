@@ -1,7 +1,7 @@
 # validator.js
 ## Template Based
 
-
+```html
     <div id="myForm">
 
         <input name="age" type="text" rules="required integer min=18 max=25 custom=myAgeFunction" rules-label="Age" />
@@ -30,9 +30,10 @@
             }
         }
     </script>
+```
 
 ## Without a Template
-
+```html
     <script>
         var rules = {
             age: {
@@ -62,3 +63,4 @@
             return //abort submit
         }
     </script>
+```html
