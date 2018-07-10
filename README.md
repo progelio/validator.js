@@ -1,5 +1,5 @@
 # validator.js
-Simple javascript validator.
+## Template Based
 
 
     <div id="myForm">
@@ -30,6 +30,8 @@ Simple javascript validator.
             }
         }
     </script>
+
+## Without a Template
 
     <script>
         var rules = {
