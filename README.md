@@ -3,13 +3,9 @@
 
 ```html
 <div id="myForm">
-
     <input name="age" type="text" rules="required integer min=18 max=25 custom=myAgeFunction" rules-label="Age" />
-
     <div rule-msg="age"></div>
-
     <button onclick="send()">Submit</buttom>
-
 </div>
 
 <script>
