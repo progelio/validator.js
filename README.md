@@ -38,7 +38,7 @@
             integer: true,
             min: 18,
             max: 25,
-            custom: function (value) {
+            custom: function (age) {
                 if (age == 20) {
                     return false
                 }
