@@ -62,7 +62,7 @@ var validator = function () {
 
     function _value(rule, value, type, args) {
         //should not be validated if the value is empty.
-        if (rule != "required" && (value == "" || value == undefined || value == null)) {
+        if (rule != "required" && rule != "compare" && (value == "" || value == undefined || value == null)) {
             return true
         }
         if (rule == "custom") {
@@ -81,10 +81,10 @@ var validator = function () {
             return value.length == parseInt(args)
         }
         if (rule == "not") {
-            return args.split(",").indexOf(value) == -1
+            return args.indexOf(value) == -1
         }
         if (rule == "any") {
-            return args.split(",").indexOf(value) > -1
+            return args.indexOf(value) > -1
         }
         if (rule == "min") {
             switch (type) {
@@ -109,9 +109,7 @@ var validator = function () {
             }
         }
         if (rule == "compare") {
-            //'args' can be an element or its id.
-            var e = typeof(args) == "string" ? $("#" + args) : args
-            return e && e.value == value
+            return args == value
         }
         if (rule == "date") {
             var b = args.test(value) //args is a regex
@@ -145,6 +143,8 @@ var validator = function () {
                 args = x.regex
             } else {
                 args = rules[r]
+                if (r == "compare") { args = arguments[2] } else
+                if (r == "any" || r == "not") { } else
                 if (typeof args == "object") {
                     error = args.error || error
                     args = args.value
@@ -171,7 +171,8 @@ var validator = function () {
         var result = []
 
         for (var prop in rules) {
-            var a = _single(data[prop], rules[prop])
+            var r = rules[prop]
+            var a = _single(data[prop], r, data[r.compare])
             if (!a) { continue }
             a.name = prop
             result.push(a)
@@ -198,8 +199,7 @@ var validator = function () {
         })
 
         elements.forEach(function (el) {
-            var errors = []
-            var failed = []
+            var errors = [], failed = [], args
             var value = ["checkbox", "radio"].indexOf(el.type) > -1 ? (el.checked || "") : el.value
             var label = el.getAttribute("rules-label") || el.name || el.id
             var rules = el.getAttribute("rules").split(" ")
@@ -215,6 +215,11 @@ var validator = function () {
                 if (ruleName == "custom") {
                     single.custom = validator.custom[ruleArgs]
                 }
+
+                if (ruleName == "compare") {
+                    var compareEl = $("#" + ruleArgs)
+                    if (compareEl) { args = compareEl.value }
+                }
             })
 
             if (!el.$validator) {
@@ -222,7 +227,7 @@ var validator = function () {
                 el.addEventListener("blur", function () { validator.validate(selector) })
             }
 
-            var b = _single(value, single)
+            var b = _single(value, single, args)
 
             _delCss(el, "input-error")
             _delCss(el, validator.config.errorInputCss)
