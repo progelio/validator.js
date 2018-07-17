@@ -5,9 +5,10 @@ var validator = function () {
     "use strict"
     function $(q) { return document.querySelector(q) }
     function $$(r, q) { return _toArray(r.querySelectorAll(q)) }
+    function $split(a, b) { return a.split(b).filter(function (x) { return x != "" }) }
 
     function _addCss(r, css) {
-        var all = r.className.split(" "), add = css.split(" ")
+        var all = $split(r.className, " "), add = $split(css, " ")
         add.forEach(function (a) {
             if (all.filter(function (x) {
                 return x == a
@@ -19,7 +20,7 @@ var validator = function () {
     }
 
     function _delCss(r, css) {
-        var all = r.className.split(" "), list = [], del = css.split(" ")
+        var all = $split(r.className," "), list = [], del = $split(css, " ")
 
         all.forEach(function (x) {
             if (del.filter(function (d) {
@@ -50,19 +51,24 @@ var validator = function () {
         min: { error: "{0} must not be less than {1}." },
         length: { error: "{0} must be {1} characters long." },
         url: { regex: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?(\?.*)?$/, error: "{0} is not a valid URL." },
-        domain: { regex: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/, error: "{0} is not a valid domain." },
         pattern: { error: "{0} is not valid." },
         zip: { regex: /^\d{5}(-\d{4})?$/, error: "{0} is not a valid postal code." },
         phone: { regex: /^((\(\d{3}\)?)|(\d{3}-))?\d{3}-\d{4}$/, error: "{0} is not a valid phone." },
         compare: { error: "{0} does not match." },
         not: { error: "{0} is not allowed." },
-        any: { error: "{1} is not allowed." },
-        custom: { error: "" }
+        any: { error: "{0} is not allowed." },
+        custom: { error: "{0} is invalid." }
     }
 
     function _value(rule, value, type, args) {
+        //handles null or undefined
+        value = value == null ? "" : value
+
+        //in case type is not passed
+        type = type || typeof value
+
         //should not be validated if the value is empty.
-        if (rule != "required" && rule != "compare" && (value == "" || value == undefined || value == null)) {
+        if (rule != "required" && value === "" && !validator.config.validateEmptyValues) {
             return true
         }
         if (rule == "custom") {
@@ -125,26 +131,26 @@ var validator = function () {
     }
 
     function _single(value, rules) {
-        var failed = [], errors = [], type, args, label
+        var failed = [], errors = [], type, args, label = rules["label"] || ""
 
         //findout what is the datatype expected.
-        for (var r in rules) {
-            if (["integer", "number", "float", "date"].indexOf(r) > -1) { type = r; break }
+        for (var ruleName in rules) {
+            if (["integer", "number", "float", "date"].indexOf(ruleName) > -1) { type = ruleName; break }
         }
 
-        for (var r in rules) {
-            var x = _rules[r]
+        for (var ruleName in rules) {
+            var x = _rules[ruleName]
             if (!x) { continue }
 
-            label = rules["label"] || r
             var error = x.error
 
             if ("regex" in x) {
                 args = x.regex
             } else {
-                args = rules[r]
-                if (r == "compare") { args = arguments[2] } else
-                if (r == "any" || r == "not") { } else
+                args = rules[ruleName]
+                if (ruleName == "pattern") { } else //nothing intended
+                if (ruleName == "compare") { args = arguments[2] } else
+                if (ruleName == "any" || ruleName == "not") { } else
                 if (typeof args == "object") {
                     error = args.error || error
                     args = args.value
@@ -155,9 +161,9 @@ var validator = function () {
                 value = value.toLocaleString().replace(",", "")
             }
 
-            if (!_value(r, value, type, args)) {
-                failed.push(r)
-                error = error.replace(/\{(0|label)\}/g, label).replace(/\{(1|value)\}/g, args)
+            if (!_value(ruleName, value, type, args)) {
+                failed.push(ruleName)
+                error = error.replace(/\{(0|label)\}/g, label).replace(/\{(1|value)\}/g, args).trim()
                 errors.push(error)
             }
         }
@@ -171,11 +177,12 @@ var validator = function () {
         var result = []
 
         for (var prop in rules) {
-            var r = rules[prop]
-            var a = _single(data[prop], r, data[r.compare])
-            if (!a) { continue }
-            a.name = prop
-            result.push(a)
+            var rule = rules[prop]
+            rule.label = rule.label || prop
+            var errors = _single(data[prop], rule, data[rule.compare])
+            if (!errors) { continue }
+            errors.name = prop
+            result.push(errors)
         }
 
         return result
@@ -189,6 +196,7 @@ var validator = function () {
         var elements = $$(root, "input[rules], select[rules], textarea[rules]")
         var result = []
         var warns = $$(root, "*[rule-msg]")
+        var summary = $$(root, "*[rules-summary]")
 
         warns.forEach(function (m) {
             _delCss(m, "validator-error")
@@ -198,11 +206,17 @@ var validator = function () {
             }
         })
 
+        summary.forEach(function (x) {
+            _delCss(x, "validator-summary")
+            _delCss(x, validator.config.errorSummaryCss)
+            x.innerHTML = "" 
+        })
+
         elements.forEach(function (el) {
             var errors = [], failed = [], args
             var value = ["checkbox", "radio"].indexOf(el.type) > -1 ? (el.checked || "") : el.value
             var label = el.getAttribute("rules-label") || el.name || el.id
-            var rules = el.getAttribute("rules").split(" ")
+            var rules = $split(el.getAttribute("rules"), " ")
             var single = { label: label }
 
             rules.forEach(function (x) {
@@ -217,7 +231,7 @@ var validator = function () {
                 }
 
                 if (ruleName == "compare") {
-                    var compareEl = $("#" + ruleArgs)
+                    var compareEl = $$(root, "#" + ruleArgs)[0]
                     if (compareEl) { args = compareEl.value }
                 }
             })
@@ -240,7 +254,7 @@ var validator = function () {
 
                 warns.forEach(function (m) {
                     var attr = m.getAttribute("rule-msg")
-                    if (attr == el.name || attr == b.failed[0] || attr == el.name + "." + b.failed[0]) {
+                    if (attr == el.name || attr == b.failed[0] || attr == el.name + "." + b.failed[0] || attr == "") {
                         _addCss(m, "validator-error")
                         _addCss(m, validator.config.errorCss)
                         m.innerHTML = m.$validator.template || b.errors[0]
@@ -252,6 +266,20 @@ var validator = function () {
             }
         })
 
+        summary.forEach(function (x) {
+            _addCss(x, "validator-summary")
+            _addCss(x, validator.config.errorSummaryCss)
+
+            var list = ""
+            result.forEach(function (e) {
+                if (e.errors.length > 0) {
+                    list += "<li>" + e.errors.join("</li><li>") + "</li>"
+                }
+            })
+
+            x.innerHTML = "<ul>" + list + "</ul>"
+        })
+
         return result.filter(function (x) { if (x.errors.length > 0) { return x } })
     }
 
@@ -261,14 +289,16 @@ var validator = function () {
         var s = document.createElement("style")
         s.id = cssId
         s.type = "text/css"
-        s.innerHTML = "*[rule-msg]{position:absolute;left:-8000px}.validator-error{position:static;left:auto}"
+        s.innerHTML = "*[rule-msg],*[rules-summary]{position:absolute;left:-8000px}.validator-error,.validator-summary{position:static;left:auto}"
         $("head").appendChild(s)
     }
 
     return {
         config: {
             errorCss: "validator-error",
-            errorInputCss: "input-error"
+            errorInputCss: "input-error",
+            errorSummaryCss: "validator-summary",
+            validateEmptyValues: false
         },
         custom: {},
         validate: _validate,
