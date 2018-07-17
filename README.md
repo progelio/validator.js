@@ -53,7 +53,7 @@ Or, you can simply display errors for a particular field-rule combination:
 <div rule-msg="age.required">Your age is required.</div>
 ```
 
-When these errors are display a class name is added to the element: "validation-error".
+When these errors are displayed, a class name is added to the element: "validator-error".
 
 ### Displaying Errors - Summary
 
@@ -61,7 +61,7 @@ To display a simple default list of errors, do the following:
 ```html
 <div rules-summary></div>
 ```
-This will diplay a list of errors using unordered list (ul). When the summary is displayed, a class name will be added to the element: "validation-summary".
+This will diplay a list of errors using unordered list (ul). When the summary is displayed, a class name will be added to the element: "validator-summary".
 
 ### Displaying Errors - Styling
 
@@ -71,9 +71,21 @@ When validation fails, a class name is added to the input field that failed. The
 <input type="text" rules="integer required" class="input-error" />
 ```
 
-For the validation summary
+For the validation summary, a class name "validator-summary" will be added and it will look like:
+```html
+<div rules-summary class="validator-summary"></div>
+```
 
-YO
+You can also add your css class names like:
+
+```html
+<script>
+    validator.config.errorCss = "myFailedMsgClass";
+    validator.config.errorInputCss = "myInputClass";
+    validator.config.errorSummaryCss = "mySummaryCss";
+</script>
+```
+
 
 ## Without a Template
 ```html
