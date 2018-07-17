@@ -25,6 +25,10 @@
     }
 </script>
 ```
+### Available Rules
+
+`required email number integer float date ssn creditcard maxlength minlength max min length url pattern zip phone compare not any custom`
+
 
 ### Displaying Errors
 
