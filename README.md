@@ -118,3 +118,24 @@ You can also add your css class names like:
     }
 </script>
 ```
+
+## Validating Empty Fields
+
+By default, all rules will only be applied when there is data to be validated. Example, the following field will be validated if the email field is empty:
+
+```html
+<input type="text" rules="email" />
+```
+If you need it validated, this means this is a required field so you should add the "required" rule to the field:
+
+```html
+<input type="text" rules="required email" />
+```
+
+If you want all rules to be applied to the field event if they are emtpy, then you can specify it in the config section:
+
+```html
+<script>
+    validator.config.validateEmptyValues = true
+</script>
+```
