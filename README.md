@@ -121,7 +121,7 @@ You can also add your css class names like:
 
 ## Validating Empty Fields
 
-By default, all rules will only be applied when there is data to be validated. Example, the following field will be validated if the email field is empty:
+By default, all rules, with the exception of the "required" rule, will only be applied when there is data to be validated. Example, the following field will NOT be validated if the input is empty:
 
 ```html
 <input type="text" rules="email" />
