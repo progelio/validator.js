@@ -108,11 +108,22 @@ You can also add your css class names like:
 
                 return true
             }
+        },
+        password: {
+            required: true,
+            minlength: 8,
+            pattern: /[0-9A-z]+/
+        }
+        password2: {
+            required: true,
+            compare: "password" //prop name to compare
         }
     }
 
     var data = {
-        age: 15
+        age: 15,
+        password: "mypassword",
+        password2: "myPassword"
     }
 
     var errors = validator.validate(data, rules)
