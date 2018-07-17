@@ -29,6 +29,19 @@
 
 `required email number integer float date ssn creditcard maxlength minlength max min length url pattern zip phone compare not any custom`
 
+For the "max" and "min" rule to work properly, you need to include one of the following rules: integer, number, float, or date. This will tell the validator what data type the value should be. Example:
+
+```html
+<input name="dob" type="text" rules="date max=9/11/2001" />
+```
+```html
+<input name="money" type="text" rules="number min=9.99" /> 
+```
+The "float" rule will validate that it is a valid decimal like: 9.99
+
+The "integer rule will validate that it is a whole number like: 200 or 5
+
+The "number" rule does not care if it has decimals or not.
 
 ### Displaying Errors
 
@@ -113,7 +126,7 @@ You can also add your css class names like:
             required: true,
             minlength: 8,
             pattern: /[0-9A-z]+/
-        }
+        },
         password2: {
             required: true,
             compare: "password" //prop name to compare
