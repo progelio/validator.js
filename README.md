@@ -43,6 +43,13 @@ The "integer rule will validate that it is a whole number like: 200 or 5
 
 The "number" rule does not care if it has decimals or not.
 
+### The "any" and "not" Rules
+
+The "any" and "not" rules are arrays. In a template, you would use it like: 
+
+```html
+<input type="text" rules="any=blue,red,orange not=brown,white,green" />
+```
 ### Displaying Errors
 
 This will catch any error for any field and display a default validation message:
@@ -131,12 +138,16 @@ You can also add your css class names like:
             required: true,
             compare: "password" //prop name to compare
         }
+        username: {
+            not: ["test","admin","root"]
+        }
     }
 
     var data = {
         age: 15,
         password: "mypassword",
-        password2: "myPassword"
+        password2: "myPassword",
+        username: "intrepid"
     }
 
     var errors = validator.validate(data, rules)
