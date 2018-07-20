@@ -160,7 +160,7 @@ If you need it validated, this means this is a required field so you should add 
 <input type="text" rules="required email" />
 ```
 
-If you want all rules to be applied to the field event if they are emtpy, then you can specify it in the config section:
+If you want all rules to be validated even if they are emtpy, then you can specify it in the config section:
 
 ```html
 <script>
