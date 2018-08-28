@@ -14,13 +14,13 @@ var validator = function () {
                 return x == a
             }).length == 0) {
                 all.push(a)
-            }            
+            }
         })
         r.className = all.join(" ")
     }
 
     function _delCss(r, css) {
-        var all = $split(r.className," "), list = [], del = $split(css, " ")
+        var all = $split(r.className, " "), list = [], del = $split(css, " ")
 
         all.forEach(function (x) {
             if (del.filter(function (d) {
@@ -135,10 +135,12 @@ var validator = function () {
 
         //findout what is the datatype expected.
         for (var ruleName in rules) {
+            if (!rules.hasOwnProperty(ruleName)) { continue }
             if (["integer", "number", "float", "date"].indexOf(ruleName) > -1) { type = ruleName; break }
         }
 
         for (var ruleName in rules) {
+            if (!rules.hasOwnProperty(ruleName)) { continue }
             var x = _rules[ruleName]
             if (!x) { continue }
 
@@ -149,12 +151,12 @@ var validator = function () {
             } else {
                 args = rules[ruleName]
                 if (ruleName == "pattern") { } else //nothing intended
-                if (ruleName == "compare") { args = arguments[2] } else
-                if (ruleName == "any" || ruleName == "not") { } else
-                if (typeof args == "object") {
-                    error = args.error || error
-                    args = args.value
-                }
+                    if (ruleName == "compare") { args = arguments[2] } else
+                        if (ruleName == "any" || ruleName == "not") { } else
+                            if (typeof args == "object") {
+                                error = args.error || error
+                                args = args.value
+                            }
             }
 
             if (type == "date" && value && value.toLocaleString) {
@@ -177,6 +179,7 @@ var validator = function () {
         var result = []
 
         for (var prop in rules) {
+            if (!rules.hasOwnProperty(prop)) { continue }
             var rule = rules[prop]
             rule.label = rule.label || prop
             var errors = _single(data[prop], rule, data[rule.compare])
@@ -209,7 +212,7 @@ var validator = function () {
         summary.forEach(function (x) {
             _delCss(x, "validator-summary")
             _delCss(x, validator.config.errorSummaryCss)
-            x.innerHTML = "" 
+            x.innerHTML = ""
         })
 
         elements.forEach(function (el) {
