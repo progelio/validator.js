@@ -81,7 +81,7 @@ var validator = function () {
             return value.length >= parseInt(args)
         }
         if (rule == "pattern") {
-            return (new RegExp(args)).test(value)
+            return (new RegExp("^" + args + "$")).test(value)
         }
         if (rule == "length") {
             return value.length == parseInt(args)
