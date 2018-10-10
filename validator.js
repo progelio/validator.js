@@ -39,7 +39,7 @@ var validator = function () {
     var _rules = {
         required: { regex: /^.{1,}$/, error: "{0} is required." },
         email: { regex: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, error: "{0} is not an email address." },
-        number: { regex: /^-?\d+(.\d+)?/, error: "{0} is not a number." },
+        number: { regex: /^-?\d+(.\d+)?$/, error: "{0} is not a number." },
         integer: { regex: /^-?\d+$/, error: "{0} is not an integer." },
         float: { regex: /^-?\d+[.]\d+$/, error: "{0} is not a float." },
         date: { regex: /^(\d{1,2})[/](\d{1,2})[/](\d{2}(\d{2})?)(\s\d{1,2}[:]\d{2}([:]\d{2})?\s(am|pm))?$/i, error: "{0} is not a date." },
