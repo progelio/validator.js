@@ -37,7 +37,7 @@ var validator = function () {
     function _toArray(data) { return Array.prototype.slice.call(data) }
 
     var _rules = {
-        required: { regex: /^.{1,}$/, error: "{0} is required." },
+        required: { regex: /^.{1,}$/m, error: "{0} is required." },
         email: { regex: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, error: "{0} is not an email address." },
         number: { regex: /^-?\d+(.\d+)?$/, error: "{0} is not a number." },
         integer: { regex: /^-?\d+$/, error: "{0} is not an integer." },
