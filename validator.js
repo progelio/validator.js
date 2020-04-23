@@ -196,10 +196,10 @@ var validator = function () {
 
         //selector could be an element
         var root = typeof selector === "string" ? $(selector) : selector
-        var elements = $$(root, "input[rules], select[rules], textarea[rules]")
+        var elements = $$(root, "input[rules]:not(:disabled), select[rules]:not(:disabled), textarea[rules]:not(:disabled)")
         var result = []
-        var warns = $$(root, "*[rule-msg]")
-        var summary = $$(root, "*[rules-summary]")
+        var warns = $$(root, "[rule-msg]")
+        var summary = $$(root, "[rules-summary]")
 
         warns.forEach(function (m) {
             _delCss(m, "validator-error")
@@ -253,7 +253,7 @@ var validator = function () {
                 _addCss(el, "input-error")
                 _addCss(el, validator.config.errorInputCss)
                 b.name = el.name
-                var warns = $$(root, "*[rule-msg]")
+                var warns = $$(root, "[rule-msg]")
 
                 warns.forEach(function (m) {
                     var attr = m.getAttribute("rule-msg")
@@ -292,7 +292,7 @@ var validator = function () {
         var s = document.createElement("style")
         s.id = cssId
         s.type = "text/css"
-        s.innerHTML = "*[rule-msg],*[rules-summary]{position:absolute;left:-8000px}.validator-error,.validator-summary{position:static;left:auto}"
+        s.innerHTML = "[rule-msg],[rules-summary]{position:absolute;left:-8000px}.validator-error,.validator-summary{position:static;left:auto}"
         $("head").appendChild(s)
     }
 
